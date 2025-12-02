@@ -18,6 +18,11 @@ This directory hosts the Next.js 16 front-end for Lang2Pick. The app currently r
 
 > Note: The current environment reported 403 responses from `registry.npmjs.org` when attempting `pnpm install`. If this persists, check for proxy/auth configuration or mirror the registry for dependency installation.
 
+### Container install attempts (Dec 2, 2025)
+- `pnpm install` → `ERR_PNPM_FETCH_403` from `registry.npmjs.org` (no auth header available in this environment).
+- `npm install --registry https://registry.npmmirror.com` → HTTP 403 fetching `@hookform/resolvers`.
+- `npm run dev` → fails with `next: not found` because dependencies never installed.
+
 ## Integration notes
 - The task queue, progress bar, and robot joints are **entirely simulated**. Hook these to the planned gRPC/WebRTC backends to submit real commands and stream joint states/video from the robot.
 - Webcam preview in `PromptControl` is only a placeholder for the robot camera feed. Replace with the negotiated WebRTC video stream when available.
