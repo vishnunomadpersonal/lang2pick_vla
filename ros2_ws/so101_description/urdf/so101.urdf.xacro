@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!-- Basic differential drive mobile base -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="so101_robot">
+
+  <xacro:include filename="$(find so101_description)/urdf/so101_description.urdf.xacro" />
+
+  <xacro:so101_new_calib/>
+
+</robot>

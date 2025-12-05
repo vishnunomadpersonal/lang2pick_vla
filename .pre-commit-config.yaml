@@ -1,0 +1,82 @@
+repos:
+  # -----------------------------
+  # 1. Format C++ using clang-format
+  # -----------------------------
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v21.1.5
+    hooks:
+      - id: clang-format
+        name: clang-format C/C++
+        files: \.(cpp|hpp|cc|hh|c|h)$
+        args: ["-style=file"]
+
+  # -----------------------------
+  # 2. Format Python using black
+  # -----------------------------
+  - repo: https://github.com/psf/black
+    rev: 25.11.0
+    hooks:
+      - id: black
+        language_version: python3
+
+  # -----------------------------
+  # 3. Lint Python with flake8
+  # -----------------------------
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.3.0
+    hooks:
+      - id: flake8
+        additional_dependencies:
+          - flake8-bugbear
+        args:
+          - "--max-line-length=120"
+
+  # -----------------------------
+  # 4. Prevent committing large files
+  # -----------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=20000"]
+
+  # -----------------------------
+  # 5. Lint YAML
+  # -----------------------------
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.0.0
+    hooks:
+      - id: prettier
+        files: \.(yaml|yml)$
+
+  # -----------------------------
+  # 6. Format XML using xmllint
+  # -----------------------------
+  - repo: local
+    hooks:
+      - id: format-xml
+        name: Format XML
+        entry: xmllint --format
+        language: system
+        types: [xml]
+        files: \.xml$
+  # -----------------------------
+  # 7. NoteBook Configure
+  # -----------------------------
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.6.0 # Use the latest release
+    hooks:
+      - id: nbstripout
+
+  # -----------------------------
+  # 8. Next.js lint
+  # -----------------------------
+  # - repo: local
+  #   hooks:
+  #     - id: nextjs-lint
+  #       name: Next.js lint
+  #       entry: bash -c "cd vla/src/web-app/front-end && npm run lint"
+  #       language: system
+  #       pass_filenames: false
+  #       files: ^vla/src/web-app/front-end/.*\.(ts|tsx|js|jsx)$
