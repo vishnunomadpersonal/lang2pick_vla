@@ -111,11 +111,11 @@ graph TD
   <div align="center">
     <img src="docs/media/vid1.gif" alt="logo" width="200" height="auto" />
   </div>
-- [ ] Write a modular Python framework for VLM object detection
-- [ ] Implement a gRPC server to send perception commands to the robot
-- [ ] Create a ROS 2 ↔ gRPC bridge
-- [ ] Stream the world-frame video using WebRTC
-- [ ] Build front-end to interact with VLM and display current picking status
+- [x] Write a modular Python framework for VLM object detection
+- [x] Implement a gRPC server to send perception commands to the robot
+- [x] Create a ROS 2 ↔ gRPC bridge
+- [x] Stream the world-frame video using WebRTC
+- [x] Build front-end to interact with VLM and display current picking status
 - [ ] Automate deployment to the cloud
 
 
@@ -126,15 +126,139 @@ graph TD
 |------------|-------------|
 | `ros2_ws/` | ROS2 workspace containing robot description, MoveIt2 configuration, controller setup, hardware interface nodes and simulation |
 | `vla/` | Vision-Language(-Action) module — converts VLA outputs (object/action tokens) into ROS2 commands for MoveIt2 |
+| `vla/src/web-app/` | Web application for controlling the robot via natural language commands |
+| `vla/src/vision-pipeline/` | gRPC-based vision pipeline for object detection and pose estimation |
 | `scripts/` | Training and fine-tuning pipeline for the Vision-Language model (using **PyTorch** and **LeRobot**) |
 | `docs/` | Documentation, diagrams, and setup guides for developers and contributors |
+
+---
+
+## 🚀 Web Application Quick Start
+
+The web application provides a modern interface to control the SO-101 arm using natural language commands, with live video feed, robot visualization, and task management.
+
+### Prerequisites
+
+- **Python 3.10+** with pip
+- **Node.js 18+** with pnpm (or npm)
+- **Git**
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/vishnunomadpersonal/lang2pick_vla.git
+cd lang2pick_vla
+```
+
+### 2. Start the Backend API Server
+
+```bash
+# Navigate to the web-app front-end directory
+cd vla/src/web-app/front-end
+
+# Install Python dependencies
+pip install fastapi uvicorn websockets python-multipart grpcio aiohttp
+
+# Start the backend server (simulation mode)
+python rest_api_server.py --mode simulation
+```
+
+The backend will start on `http://localhost:8000`
+
+**Backend modes:**
+- `--mode simulation` — Demo mode with simulated robot (default)
+- `--mode real` — Connect to actual ROS2 and hardware
+
+### 3. Start the Frontend (New Terminal)
+
+```bash
+# Navigate to front-end directory
+cd vla/src/web-app/front-end
+
+# Install Node.js dependencies
+pnpm install
+# or: npm install
+
+# Start development server
+pnpm dev
+# or: npm run dev
+```
+
+The frontend will start on `http://localhost:3000`
+
+### 4. Access the Application
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+**Features available:**
+- 🎥 Live video feed (webcam or WebRTC)
+- 🤖 Real-time robot arm visualization
+- 💬 Natural language command input
+- 📋 Task queue with progress tracking
+- 📊 System status dashboard
+- 🔄 Simulation/Real mode toggle
+
+### Configuration
+
+Edit `vla/src/web-app/front-end/.env.local` to customize:
+
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_WS_URL=ws://localhost:8000/ws
+NEXT_PUBLIC_USE_SIMULATION=true
+NEXT_PUBLIC_WEBRTC_ENABLED=false
+```
+
+### API Reference
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/status` | System status |
+| POST | `/api/tasks` | Submit new task |
+| GET | `/api/tasks` | List all tasks |
+| GET | `/api/robot/joints` | Current joint state |
+| POST | `/api/robot/home` | Move to home position |
+
+For detailed API documentation, see [Web App README](vla/src/web-app/README.md).
+
+---
+
+## 🔧 Vision Pipeline (gRPC)
+
+The vision pipeline provides object detection and pose estimation services via gRPC.
+
+### Running the gRPC Server
+
+```bash
+cd vla/src/vision-pipeline
+
+# Install requirements
+pip install -r requirements-runpod.txt
+
+# Run the gRPC server
+python grpc_server.py
+```
+
+### Using the gRPC Client
+
+```python
+from grpc_client import VisionPipelineClient
+
+client = VisionPipelineClient("localhost:50051")
+result = client.detect_objects(image, prompt="red bottle")
+```
+
+---
 
 ## Tech Stack
 
 - **ROS2 Humble** — Core robotics framework  
 - **MoveIt2** — Inverse kinematics and motion planning  
 - **PyTorch + LeRobot** — Vision-Language training & fine-tuning  
-- **Gazebo / MuJoCo Sim** — Physics simulation and visualization  
+- **Gazebo / MuJoCo Sim** — Physics simulation and visualization
+- **Next.js + TypeScript** — Modern web frontend  
+- **FastAPI + Python** — Backend API with WebSocket support  
+- **gRPC + Protocol Buffers** — High-performance vision pipeline communication  
 
 ## [Contributing](CONTRIBUTING.md)
 
